@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  server:
+    container_name: server
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file: ".env"
+    networks:
+      - appnet
+    depends_on:
+      - database
+    ports:
+      - "3001:3001"
+    command: npm run start:dev
+
+
+
+  database:
+    image: postgres:12
+    networks:
+      - appnet
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_val:/var/lib/postgresql/data
+    env_file: ".env"
+
+
+
+networks:
+  appnet:
+
+
+volumes:
+  db_val:
+    driver: local
