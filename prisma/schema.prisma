@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @default(autoincrement()) @id
+  firstName  String?
+  lastName String?
+  email String  @unique
+  password String?
+  phone String?
+  type Role?
+  card Card
+  orders Order[]
+}
+
+model Card {
+    id    Int     @default(autoincrement()) @id
+    externalId String?
+    user User? @relation(fields: [userId], references: [id])
+    userId Int?
+    transactions Transaction[]
+}
+
+model Category {
+  id        Int      @default(autoincrement()) @id
+  name String?
+  products Product[]
+}
+
+model Label {
+  id        Int      @default(autoincrement()) @id
+  name String?
+  image String?
+  products Product[]
+}
+
+model Modifier {
+  id        Int      @default(autoincrement()) @id
+  name String?
+  price Int?
+  modToProds ModToProd[]
+  modToProdsToOrder ModToProdToOrder[]
+}
+
+model Product {
+  id        Int      @default(autoincrement()) @id
+  name String?
+  price Int?
+  description String?
+  label Label? @relation(fields: [labelId], references: [id])
+  labelId Int?
+  category Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+  modToProds ModToProd[]
+}
+
+model ModToProd {
+  id        Int      @default(autoincrement()) @id
+  product Product? @relation(fields: [productId], references: [id])
+  productId Int?
+  modifier Modifier? @relation(fields: [modifierId], references: [id])
+  modifierId Int?
+  productOrder ProductOrder
+}
+
+model ProductOrder {
+  id        Int      @default(autoincrement()) @id
+  quantity
+  product Product? @relation(fields: [productId], references: [id])
+  productId Int?
+  modifier Modifier? @relation(fields: [modifierId], references: [id])
+  modifierId Int?
+  productOrder ProductOrder
+}
+
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+
