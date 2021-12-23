@@ -1,4 +1,4 @@
-FROM node:12.13-alpine As development
+FROM node:16 As Development
 
 ENV NODE_ENV=development
 
