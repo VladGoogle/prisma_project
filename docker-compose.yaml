@@ -5,37 +5,24 @@ services:
     container_name: server
     build:
       context: .
-      target: development
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
-    env_file: ".env"
-    networks:
-      - appnet
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
     depends_on:
       - database
     ports:
-      - "3001:3001"
+      - ${SERVER_PORT}:${SERVER_PORT}
     command: npm run start:dev
 
 
 
   database:
     image: postgres:12
-    networks:
-      - appnet
     ports:
-      - "5432:5432"
-    volumes:
-      - db_val:/var/lib/postgresql/data
+      - ${PGPORT}:${PGPORT}
     env_file: ".env"
-
-
-
-networks:
-  appnet:
-
-
-volumes:
-  db_val:
-    driver: local
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    restart: always

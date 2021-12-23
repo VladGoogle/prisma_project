@@ -11,138 +11,134 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  firstName  String
-  lastName String
-  email String  @unique
-  password String
-  phone String
-  type Role
-  card Card?
-  orders Order[]
+  id        Int     @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String  @unique
+  password  String
+  phone     String
+  type      Role
+  card      Card?
+  orders    Order[]
 }
 
 model Card {
-    id    Int     @default(autoincrement()) @id
-    externalId String
-    user User @relation(fields: [userId], references: [id])
-    userId Int
-    transactions Transaction[]
+  id           Int           @id @default(autoincrement())
+  externalId   String
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int           @unique
+  transactions Transaction[]
 }
 
 model Category {
-  id        Int      @default(autoincrement()) @id
-  name String
+  id       Int       @id @default(autoincrement())
+  name     String
   products Product[]
 }
 
 model Label {
-  id        Int      @default(autoincrement()) @id
-  name String
-  image String
+  id       Int       @id @default(autoincrement())
+  name     String
+  image    String
   products Product[]
 }
 
 model Modifier {
-  id        Int      @default(autoincrement()) @id
-  name String?
-  price Int
-  modToProds ModToProd[]
+  id                Int                @id @default(autoincrement())
+  name              String?
+  price             Int
+  modToProds        ModToProd[]
   modToProdsToOrder ModToProdToOrder[]
 }
 
 model Product {
-  id        Int      @default(autoincrement()) @id
-  name String?
-  price Int
+  id          Int         @id @default(autoincrement())
+  name        String?
+  price       Int
   description String?
-  label Label @relation(fields: [labelId], references: [id])
-  labelId Int
-  category Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
-  modToProds ModToProd[]
+  label       Label       @relation(fields: [labelId], references: [id])
+  labelId     Int
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  modToProds  ModToProd[]
 }
 
 model ModToProd {
-  id        Int      @default(autoincrement()) @id
-  product Product @relation(fields: [productId], references: [id])
-  productId Int
-  modifier Modifier @relation(fields: [modifierId], references: [id])
-  modifierId Int
+  id           Int           @id @default(autoincrement())
+  product      Product       @relation(fields: [productId], references: [id])
+  productId    Int
+  modifier     Modifier      @relation(fields: [modifierId], references: [id])
+  modifierId   Int
   productOrder ProductOrder?
 }
 
 model ProductOrder {
-  id        Int      @default(autoincrement()) @id
-  quantity Int
-  price Int
-  modToProd ModToProd? @relation(fields: [modToProdId], references: [id])
-  modToProdId Int
+  id                Int                @id @default(autoincrement())
+  quantity          Int
+  price             Int
+  modToProd         ModToProd?         @relation(fields: [modToProdId], references: [id])
+  modToProdId       Int                @unique
   modToProdsToOrder ModToProdToOrder[]
-  order Order?
+  order             Order?
 }
-
 
 model ModToProdToOrder {
-  id        Int      @default(autoincrement()) @id
-  productOrder ProductOrder @relation(fields: [productOrderId], references: [id])
-  productOrderId Int
-  modifier Modifier @relation(fields: [modifierId], references: [id])
-  modifierId Int
+  id                Int          @id @default(autoincrement())
+  productOrder      ProductOrder @relation(fields: [productOrderId], references: [id])
+  productOrderId    Int
+  modifier          Modifier     @relation(fields: [modifierId], references: [id])
+  modifierId        Int
   totalProductPrice Int
-  order Order?
+  order             Order?
 }
 
-
 model Order {
-  id        Int      @default(autoincrement()) @id
-  description String?
-  totalPrice Int
-  tax Int
-  status OrderStatus
-  isMods Boolean
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  productOrder ProductOrder? @relation(fields: [productOrderId], references: [id])
-  productOrderId Int?
-  modToProdToOrder ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id])
-  modToProdToOrderId Int?
-  transaction Transaction?
+  id                 Int               @id @default(autoincrement())
+  description        String?
+  totalPrice         Int
+  tax                Int
+  status             OrderStatus
+  isMods             Boolean
+  user               User              @relation(fields: [userId], references: [id])
+  userId             Int
+  productOrder       ProductOrder?     @relation(fields: [productOrderId], references: [id])
+  productOrderId     Int?              @unique
+  modToProdToOrder   ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id])
+  modToProdToOrderId Int?              @unique
+  transaction        Transaction?
 }
 
 model Transaction {
-  id        Int      @default(autoincrement()) @id
-  source String
-  amount Int
-  status ChargeStatus
-  currency ChargeCurrency
-  description String?
+  id            Int            @id @default(autoincrement())
+  source        String
+  amount        Int
+  status        ChargeStatus
+  currency      ChargeCurrency
+  description   String?
   customerToken String
-  order Order? @relation(fields: [orderId], references: [id])
-  orderId Int
-  card Card? @relation(fields: [cardId], references: [id])
-  cardId Int
+  order         Order?         @relation(fields: [orderId], references: [id])
+  orderId       Int            @unique
+  card          Card?          @relation(fields: [cardId], references: [id])
+  cardId        Int
 }
-
 
 enum Role {
   CUSTOMER
   ADMIN
 }
 
-enum ChargeStatus{
-    SUCCEEDED
-    REFUNDED
+enum ChargeStatus {
+  SUCCEEDED
+  REFUNDED
 }
 
-enum ChargeCurrency{
-    USD
-    RUB
+enum ChargeCurrency {
+  USD
+  RUB
 }
 
 enum OrderStatus {
-    RECEIVED
-    PROCESSING
-    READY
+  RECEIVED
+  PROCESSING
+  READY
 }
-

@@ -7,7 +7,7 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async findUserById(id: number) {
-    return await this.prisma.user.findOne({
+    return await this.prisma.user.findFirst({
       where: { id: id },
     });
   }
