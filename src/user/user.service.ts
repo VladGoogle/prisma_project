@@ -6,30 +6,7 @@ import { UserDto } from './dto/user.dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findUserById(id: number) {
-    return await this.prisma.user.findFirst({
-      where: { id: id },
-    });
-  }
-
-  // async users(params: {
-  //   skip?: number;
-  //   take?: number;
-  //   cursor?: Prisma.UserWhereUniqueInput;
-  //   where?: Prisma.UserWhereInput;
-  //   orderBy?: Prisma.UserOrderByWithRelationInput;
-  // }): Promise<User[]> {
-  //   const { skip, take, cursor, where, orderBy } = params;
-  //   return this.prisma.user.findMany({
-  //     skip,
-  //     take,
-  //     cursor,
-  //     where,
-  //     orderBy,
-  //   });
-  // }
-
-  async createUser(data: UserDto) {
+  async registerUser(data: UserDto) {
     return await this.prisma.user.create({
       data: {
         firstName: data.firstName,
@@ -42,20 +19,43 @@ export class UserService {
     });
   }
 
-  // async updateUser(params: {
-  //   where: Prisma.UserWhereUniqueInput;
-  //   data: Prisma.UserUpdateInput;
-  // }): Promise<User> {
-  //   const { where, data } = params;
-  //   return this.prisma.user.update({
-  //     data,
-  //     where,
-  //   });
-  // }
-  //
-  // async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
-  //   return this.prisma.user.delete({
-  //     where,
-  //   });
-  // }
+  async findUserById(id: number) {
+    return await this.prisma.user.findFirst({
+      where: { id: id },
+      include:{
+
+      }
+    });
+  }
+
+  async findUserByEmail(email:string){
+    return await  this.prisma.user.findFirst({
+      where:{email:email}
+    })
+  }
+
+  async findAllUsers(){
+    return await this.prisma.user.findMany()
+  }
+
+  async removeUser(id:number){
+    return await  this.prisma.user.delete({
+      where:{id:id}
+    })
+  }
+
+  async updateUserInfo (data: UserDto, id:number) {
+    return await this.prisma.user.update({
+      where:{id: id},
+      data:{
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        type: data.type,
+      }
+    })
+  }
+
 }
