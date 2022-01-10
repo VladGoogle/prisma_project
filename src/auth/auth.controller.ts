@@ -14,15 +14,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() loginBody: LoginDto, @Res() res:Response) {
-    const token = await this.authService.login(loginBody);
-    // res.cookie('access_token', token, {
-    //   httpOnly: true,
-    //   domain: 'localhost', // your domain here!
-    //   expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-    // })
-    res.set("access_token", token)
-      .send({ success:true, token });
+  async login(@Body() loginBody: LoginDto) {
+    return await this.authService.login(loginBody);
   }
 
   @Post('signup')

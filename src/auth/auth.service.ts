@@ -15,14 +15,14 @@ export class AuthService {
   ) {}
 
   async login(user: LoginDto) {
-    const payload = { email: user.email};
+    const payload = { email: user.email };
     const userObj = await this.userService.findUserByEmail(user.email)
     const isValid = await bcrypt.compare(user.password, userObj.password)
     if(!isValid) {
       throw new BadRequestException('Invalid user credentials')
     }
     const access_token = this.jwtService.sign(payload)
-    return access_token;
+    return {access_token};
   }
 
   public async register(user:UserDto) {

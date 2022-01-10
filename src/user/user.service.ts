@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../prisma.servise';
-import { UserDto } from './dto/user.dto';
+import { UserDto } from "./dto/user.dto";
+import { newPasswordDto } from "./dto/newPassword.dto";
+import * as bcrypt from 'bcrypt';
+import { ErrorHandlers } from "../middlewares/error.handlers";
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private errorHandler: ErrorHandlers) {}
 
   async registerUser(data: UserDto) {
     return await this.prisma.user.create({
@@ -14,48 +19,99 @@ export class UserService {
         email: data.email,
         password: data.password,
         phone: data.phone,
-        type: data.type,
+        roles: data.roles
       },
     });
   }
 
   async findUserById(id: number) {
-    return await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: { id: id },
       include:{
-
+        card:true,
+        orders:true
       }
     });
+    await this.errorHandler.NotFoundError(user)
+
+    return user;
   }
 
   async findUserByEmail(email:string){
-    return await  this.prisma.user.findFirst({
-      where:{email:email}
+    const user =  await  this.prisma.user.findFirst({
+      where:{
+        email:email
+      },
+      include:{
+        card:true,
+        orders:true
+      }
     })
+    await this.errorHandler.NotFoundError(user)
+
+    return user;
   }
 
   async findAllUsers(){
-    return await this.prisma.user.findMany()
-  }
-
-  async removeUser(id:number){
-    return await  this.prisma.user.delete({
-      where:{id:id}
+    return await this.prisma.user.findMany({
+      include:{
+        card:true,
+        orders:true
+      }
     })
   }
 
+  async removeUser(id:number){
+    const user =  await  this.prisma.user.delete({
+      where:{id:id}
+    })
+    await this.errorHandler.NotFoundError(user)
+  }
+
   async updateUserInfo (data: UserDto, id:number) {
-    return await this.prisma.user.update({
+    const user = await this.prisma.user.update({
       where:{id: id},
       data:{
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        password: data.password,
         phone: data.phone,
-        type: data.type,
+        roles: data.roles
       }
     })
+    await this.errorHandler.NotFoundError(user)
+
+    return user;
+  }
+
+  async changeUserPassword(data: newPasswordDto, id:number) {
+    const user = await  this.prisma.user.findUnique({
+      where:{id:id}
+    })
+    await this.errorHandler.NotFoundError(user)
+
+    const isValid = await bcrypt.compare(data.oldPassword, user.password)
+
+    if(!isValid){
+      throw new BadRequestException(`Invalid old password!`)
+    }
+
+    if(data.newPassword!=data.repeatPassword){
+      throw new BadRequestException(`Passwords should be matched`)
+    }
+
+    if(data.repeatPassword!=data.newPassword){
+      throw new BadRequestException(`Passwords should be matched`)
+    }
+
+
+    return await this.prisma.user.update({
+      where:{id: id},
+      data:{
+        password: await bcrypt.hash(data.newPassword, 10)
+      }
+    })
+
   }
 
 }

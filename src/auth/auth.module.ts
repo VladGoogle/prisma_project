@@ -14,7 +14,7 @@ dotenv.config()
     UserModule,
     JwtModule.register({
       secret: process.env.JWTKEY,
-      signOptions: { expiresIn: '1m' },
+      signOptions: { expiresIn: '300s' },
     }),
   ],
   providers: [AuthService, AuthStrategy],
