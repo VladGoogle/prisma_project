@@ -1,21 +1,35 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UploadedFile, UseInterceptors } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from "@nestjs/common";
 import { ModDto } from "./dto/mod.dto";
 import { ModifierService } from "./modifier.service";
 import { Role } from "../enums/role.enum";
 import { Roles } from "../roles/roles.decorator";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller()
+@UseGuards(AuthGuard('jwt'))
 export class ModifierController {
   constructor(private modifierService: ModifierService) {}
 
   @Roles(Role.ADMIN)
-  @Post('modifiers')
+  @Post('modifiers/create')
   async createModifier(@Body() modifier:ModDto){
     return this.modifierService.createModifier(modifier)
   }
 
   @Roles(Role.ADMIN)
-  @Patch('modifiers/:id')
+  @Patch('modifiers/:id/update')
   async updateModifierInfo(@Body() mod:ModDto, id:string) {
     const modifierId = parseInt(id);
     return await  this.modifierService.updateModifierInfo(mod, modifierId)
@@ -27,7 +41,7 @@ export class ModifierController {
     return await this.modifierService.findModifierById(modifierId)
   }
 
-  @Get('modifiers/name')
+  @Get('modifiers/:name')
   async getModifierByName(@Body() name: string) {
     return await this.modifierService.findModifierByName(name)
   }

@@ -4,12 +4,14 @@ import { CategoryService } from "./category.service";
 import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "../roles/roles.decorator";
 import { Role } from "../enums/role.enum";
+import { RolesGuard } from "../roles/roles.guard";
 
 @Controller()
 @UseGuards(AuthGuard('jwt'))
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
+  @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Post('categories')
   async createCategory(@Body() category:CategoryDto){
@@ -32,6 +34,7 @@ export class CategoryController {
     return await this.categoryService.findAllCategories()
   }
 
+  @UseGuards(RolesGuard)
   @Roles(Role.ADMIN)
   @Delete('categories/:id')
   async deleteCategory(@Param('id') id: string){

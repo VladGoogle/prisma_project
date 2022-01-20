@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-import { PrismaService } from './prisma.servise';
+import { PrismaService } from './prisma.service';
 dotenv.config();
 
 async function bootstrap() {

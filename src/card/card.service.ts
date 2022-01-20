@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.servise';
+import { PrismaService } from '../prisma.service';
 import { CardDto } from "./dto/card.dto";
 @Injectable()
 export class CardService {
