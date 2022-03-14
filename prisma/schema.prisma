@@ -20,6 +20,7 @@ model User {
   roles     Role[]
   card      Card?
   orders    Order[]
+  token     String?
 }
 
 model Card {
@@ -96,14 +97,13 @@ model Order {
   id                 Int               @id @default(autoincrement())
   description        String?
   totalPrice         Int
-  tax                Int
-  status             OrderStatus
+  status             OrderStatus       @default(RECEIVED)
   isMods             Boolean
   user               User              @relation(fields: [userId], references: [id])
   userId             Int
-  productOrder       ProductOrder?     @relation(fields: [productOrderId], references: [id])
+  productsOrder      ProductOrder?     @relation(fields: [productOrderId], references: [id])
   productOrderId     Int?              @unique
-  modToProdToOrder   ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id])
+  modToProdsToOrder  ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id])
   modToProdToOrderId Int?              @unique
   transaction        Transaction?
 }

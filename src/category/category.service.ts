@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../prisma.service';
 import { CategoryDto } from "./dto/category.dto";
+import { ErrorHandlers } from "../middlewares/error.handlers";
 @Injectable()
 export class CategoryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+              private errorHandler: ErrorHandlers) {}
 
   async createCategory(data: CategoryDto) {
     return await this.prisma.category.create({
@@ -18,10 +20,7 @@ export class CategoryService {
     const cat =  await  this.prisma.category.findFirst({
       where:{name:name}
     });
-    if(!cat){
-      throw new NotFoundException(`Category doesn't exists`)
-    }
-
+    await  this.errorHandler.NotFoundError(cat)
     return cat;
   }
 
@@ -29,10 +28,7 @@ export class CategoryService {
     const cat =  await  this.prisma.category.findUnique({
       where:{id:id}
     });
-    if(!cat){
-      throw new NotFoundException(`Category doesn't exists`)
-    }
-
+    await this.errorHandler.NotFoundError(cat)
     return cat;
   }
 

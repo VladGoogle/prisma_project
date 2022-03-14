@@ -76,11 +76,22 @@ export class UserService {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        roles: data.roles
+        roles: data.roles,
       }
     })
     await this.errorHandler.NotFoundError(user)
 
+    return user;
+  }
+
+  async setCustomerToken (token: string, id:number) {
+    const user = await this.prisma.user.update({
+      where:{id: id},
+      data:{
+        token: token
+      }
+    })
+    await this.errorHandler.NotFoundError(user)
     return user;
   }
 

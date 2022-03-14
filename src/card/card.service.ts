@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CardDto } from "./dto/card.dto";
+import { ErrorHandlers } from "../middlewares/error.handlers";
 @Injectable()
 export class CardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+              private errorHandler: ErrorHandlers) {}
 
   async createCard(data: CardDto) {
     return await this.prisma.card.create({
@@ -16,13 +18,15 @@ export class CardService {
 
 
   async findCardById (id:number){
-    return await  this.prisma.card.findUnique({
+    const card = await  this.prisma.card.findUnique({
       where:{id:id},
       include:{
         user: true,
         transactions: true
       }
     });
+    await  this.errorHandler.NotFoundError(card)
+    return card;
   }
 
 

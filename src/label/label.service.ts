@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../prisma.service';
 import { LabelDto } from "./dto/label.dto";
+import { ErrorHandlers } from "../middlewares/error.handlers";
 
 @Injectable()
 export class LabelService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService,
+              private  errorHandler: ErrorHandlers) {}
 
   async createLabel(data: LabelDto) {
     return await this.prisma.label.create({
@@ -23,10 +25,7 @@ export class LabelService {
         products:true
       }
     })
-    if(!label){
-      throw new NotFoundException(`Label doesn't exists`)
-    };
-
+    await  this.errorHandler.NotFoundError(label)
     return label;
   }
 
@@ -37,12 +36,8 @@ export class LabelService {
         products:true
       }
     })
-    console.log(typeof label)
-    if(!label){
-      throw new NotFoundException(`Label doesn't exists`)
-    };
-
-    return label;;
+    await  this.errorHandler.NotFoundError(label)
+    return label;
   }
 
 
@@ -61,10 +56,7 @@ export class LabelService {
         image: image
       }
     })
-    if(!label){
-      throw new NotFoundException(`Label doesn't exists`)
-    };
-
+    await  this.errorHandler.NotFoundError(label)
     return label;
     }
 

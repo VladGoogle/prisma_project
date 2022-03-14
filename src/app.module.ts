@@ -10,10 +10,13 @@ import { ModifierModule } from './modifier/modifier.module';
 import { ProductModule } from './product/product.module';
 import { ModtoprodModule } from './modtoprod/modtoprod.module';
 import { ProdorderModule } from './prodorder/prodorder.module';
+import { OrderModule } from './order/order.module';
+import { TransactionModule } from './transaction/transaction.module';
+import { StripeModule } from './stripe/stripe.module';
 
 
 @Module({
-  imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule],
+  imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule, OrderModule, StripeModule, TransactionModule],
   controllers: [AppController],
   providers: [AppService],
 })
