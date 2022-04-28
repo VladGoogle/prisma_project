@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { ModToProdDto } from "./dto/modtoprod.dto";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 

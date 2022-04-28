@@ -12,7 +12,7 @@ import { Roles } from "../roles/roles.decorator";
 import { Role } from "../enums/role.enum";
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('stripe')
+@Controller()
 export class StripeController {
   constructor(private stripeService: StripeService) {}
 
@@ -33,7 +33,6 @@ export class StripeController {
   async createCharge(@Body() charge:TransactionDto) {
     return await this.stripeService.payForOrderWithToken(charge)
   }
-
 
   @Roles(Role.ADMIN)
   @Post('admin/transaction/:id/refund')

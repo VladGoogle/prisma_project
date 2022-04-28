@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { CardDto } from "./dto/card.dto";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 @Injectable()
@@ -38,6 +38,17 @@ export class CardService {
       }
       }
     )
+  }
+
+  async setCardSource (source: string, id:number) {
+    const card = await this.prisma.card.update({
+      where:{id: id},
+      data:{
+        source: source
+      }
+    })
+    await this.errorHandler.NotFoundError(card)
+    return card;
   }
 
 

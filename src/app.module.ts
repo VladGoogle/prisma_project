@@ -13,10 +13,12 @@ import { ProdorderModule } from './prodorder/prodorder.module';
 import { OrderModule } from './order/order.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { StripeModule } from './stripe/stripe.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { MiddlewaresModule } from './middlewares/middlewares.module';
 
 
 @Module({
-  imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule, OrderModule, StripeModule, TransactionModule],
+  imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule, OrderModule, StripeModule, TransactionModule, PrismaModule, MiddlewaresModule],
   controllers: [AppController],
   providers: [AppService],
 })

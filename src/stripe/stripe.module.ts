@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 import { StripeService } from "./stripe.service";
 import { StripeController } from "./stripe.controller";

@@ -26,6 +26,7 @@ model User {
 model Card {
   id           Int           @id @default(autoincrement())
   externalId   String
+  source       String?
   user         User          @relation(fields: [userId], references: [id])
   userId       Int           @unique
   transactions Transaction[]
@@ -112,7 +113,7 @@ model Transaction {
   id            Int            @id @default(autoincrement())
   source        String
   amount        Int
-  status        ChargeStatus
+  status        ChargeStatus   @default(SUCCEEDED)
   currency      ChargeCurrency
   description   String?
   customerToken String

@@ -4,6 +4,7 @@ import { CardService } from "./card.service";
 import { AuthGuard } from "@nestjs/passport";
 
 @Controller()
+@UseGuards(AuthGuard('jwt'))
 export class CardController {
   constructor(private cardService: CardService) {}
 

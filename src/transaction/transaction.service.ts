@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../../prisma/prisma.service";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 import { TransactionDto } from "./dto/transaction.dto";
 import { RefundDto } from "./dto/refund.dto";
@@ -61,7 +61,7 @@ export class TransactionService {
     const transaction = await  this.prisma.transaction.update({
       where:{id:id},
       data:{
-        status: data.status,
+        status: "REFUNDED",
         amount: data.amount
       }
     })
@@ -73,7 +73,7 @@ export class TransactionService {
     const transaction = await  this.prisma.transaction.update({
       where:{id:id},
       data:{
-        status: data.status
+        status: "REFUNDED"
       }
     })
     await this.errorHandler.NotFoundError(transaction)

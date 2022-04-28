@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsEmail, IsEnum, IsString, Matches } from "class-validator";
+import { IsNotEmpty, IsEmail, IsEnum, IsString, Matches, IsNumber, IsInt, IsMobilePhone } from "class-validator";
 import { Role } from "../../enums/role.enum";
+import { IsE164PhoneNumber } from "../../validators/phone.validator";
 
 export class UserDto {
   @IsString()
@@ -15,7 +16,7 @@ export class UserDto {
   @Matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/)
   password: string;
 
-  @IsString()
+  @IsE164PhoneNumber()
   phone: string;
 
   @IsNotEmpty()
