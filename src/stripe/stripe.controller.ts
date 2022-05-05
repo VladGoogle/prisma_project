@@ -4,12 +4,15 @@ import {
   Body,
   Param,
   Post,
+  Patch,
+  Req
 } from "@nestjs/common";
 import { TransactionDto } from "../transaction/dto/transaction.dto";
 import { RefundDto } from "../transaction/dto/refund.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { Roles } from "../roles/roles.decorator";
 import { Role } from "../enums/role.enum";
+import { RefundInterface } from "../interfaces/refund.interface";
 
 @UseGuards(AuthGuard('jwt'))
 @Controller()
@@ -35,15 +38,15 @@ export class StripeController {
   }
 
   @Roles(Role.ADMIN)
-  @Post('admin/transaction/:id/refund')
-  async createRefundForAdmin(@Body() refundObj:RefundDto, @Param('id') id:string) {
+  @Patch('admin/transaction/:id/refund')
+  async createRefundForAdmin(@Body() data: RefundInterface, @Param('id') id:string) {
     const transId = parseInt(id)
-    return await this.stripeService.createRefundForAdmin(refundObj, transId)
+    return await this.stripeService.createRefundForAdmin(data.amount, transId)
   }
 
-  @Post('customer/transaction/:id/refund')
-  async createRefundForCustomer(@Body() refundObj:RefundDto, @Param('id') id:string) {
+  @Patch('customer/transaction/:id/refund')
+  async createRefundForCustomer(@Param('id') id:string) {
     const transId = parseInt(id)
-    return await this.stripeService.createRefundForCustomer(refundObj, transId)
+    return await this.stripeService.createRefundForCustomer(transId)
   }
 }

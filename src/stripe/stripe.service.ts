@@ -8,6 +8,7 @@ import { UserService } from "../user/user.service";
 import * as dotenv from 'dotenv'
 import { PrismaService } from "../../prisma/prisma.service";
 import { ErrorHandlers } from "../middlewares/error.handlers";
+import { OrderService } from "../order/order.service";
 dotenv.config()
 const stripe = new Stripe(process.env.SECRET_KEY,
   {
@@ -20,7 +21,8 @@ export class StripeService {
               private errorHandler: ErrorHandlers,
               private userService: UserService,
               private cardService: CardService,
-              private transactionService: TransactionService)
+              private transactionService: TransactionService,
+              private orderService: OrderService)
   {}
 
   public async newCustomer(id:number) {
@@ -52,36 +54,42 @@ export class StripeService {
   }
 
   public async payForOrderWithToken(data: TransactionDto){
+    const order = await this.orderService.findOrder(data.orderId)
+    const user= await this.userService.findUserById(data.userId)
+    const card = await this.cardService.findCardById(data.cardId)
     const charge = await stripe.charges.create({
-      source: data.source,
-      amount: data.amount,
+      source: card.source,
+      amount: order.totalPrice,
       currency: data.currency,
-      customer: data.token,
+      customer: user.token,
       description:data.description
     })
     const transaction = await this.transactionService.createTransaction(data)
+    await this.transactionService.setChargeId(charge.id, transaction.id)
     return {"charge":charge, "transaction":transaction};
   }
 
-  public async createRefundForAdmin(refundObj:RefundDto, transId:number)
+  public async createRefundForAdmin(amount: number, id:number)
   {
-       await stripe.refunds.create({
-        charge: refundObj.chargeId,
-        amount: refundObj.amount
+      const transaction = await this.transactionService.getTransactionById(id)
+       const refund = await stripe.refunds.create({
+        charge: transaction.charge,
+        amount: amount
       })
 
-      const charge = await this.transactionService.changeTransactionAfterRefundForAdmin(refundObj, transId)
-      return charge;
+      const charge = await this.transactionService.changeTransactionAfterRefundForAdmin(refund.id,amount, id)
+      return {charge, refund};
     }
 
-  public async createRefundForCustomer(refundObj:RefundDto, transId:number)
+  public async createRefundForCustomer(id:number)
   {
-    await stripe.refunds.create({
-      charge: refundObj.chargeId
+    const transaction = await this.transactionService.getTransactionById(id)
+    const refund = await stripe.refunds.create({
+      charge: transaction.charge
     })
 
-    const charge = await this.transactionService.changeTransactionAfterRefundForCustomer(refundObj, transId)
-    return charge;
+    const charge = await this.transactionService.changeTransactionAfterRefundForCustomer(refund.id, id)
+    return {charge, refund};
   }
 
 }

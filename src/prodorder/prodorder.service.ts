@@ -2,21 +2,38 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../../prisma/prisma.service';
 import { ProductOrderDto } from "./dto/prodorder.dto";
 import { ErrorHandlers } from "../middlewares/error.handlers";
+import { ModToProdService } from "../modtoprod/modtoprod.service";
+import { ProductService } from "../product/product.service";
 
 @Injectable()
 export class ProductOrderService {
   constructor(private prisma: PrismaService,
-              private errorHandler: ErrorHandlers)
+              private errorHandler: ErrorHandlers,
+              private modToProdService: ModToProdService,
+              private product: ProductService)
   {}
 
   async confirmProductToOrder(data: ProductOrderDto) {
-    return await this.prisma.productOrder.create({
-      data: {
-        quantity: data.quantity,
-        price: data.price,
-        modToProdId: data.modToProdId
-      },
-    });
+    if(!data.productId) {
+      const modToprod = await this.modToProdService.findModifierWithProduct(data.modToProdId)
+      return await this.prisma.productOrder.create({
+        data: {
+          quantity: data.quantity,
+          price: modToprod.sum * data.quantity,
+          modToProdId: data.modToProdId
+        },
+      })
+    }
+    else{
+      const product = await this.product.findProductById(data.productId)
+      return await this.prisma.productOrder.create({
+        data: {
+          quantity: data.quantity,
+          price: product.price * data.quantity,
+          productId: data.productId
+        },
+      })
+    };
   }
 
 
@@ -25,6 +42,7 @@ export class ProductOrderService {
       where:{id:id},
       include:{
         modToProd: true,
+        product: true,
         modToProdsToOrder:true,
         order:true
       }
@@ -39,6 +57,7 @@ export class ProductOrderService {
     return await  this.prisma.productOrder.findMany({
       include:{
         modToProd: true,
+        product: true,
         modToProdsToOrder: true,
         order: true
       }
@@ -46,13 +65,13 @@ export class ProductOrderService {
   }
 
 
-  async changeProductToOrderInfo(data: ProductOrderDto, id:number){
+  async changeProductQuantity(data: ProductOrderDto, id:number){
+    const obj = await this.findProductToOrder(id)
     const productOrder = await  this.prisma.productOrder.update({
       where:{id:id},
       data:{
         quantity: data.quantity,
-        price: data.price,
-        modToProdId: data.modToProdId
+        price: obj.price * data.quantity,
       }
     })
     await this.errorHandler.NotFoundError(productOrder)
@@ -66,6 +85,7 @@ export class ProductOrderService {
       where:{id:id},
       include:{
         modToProd:true,
+        product: true,
         modToProdsToOrder: true,
         order:true
       }

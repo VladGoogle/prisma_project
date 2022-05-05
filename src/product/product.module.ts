@@ -7,6 +7,7 @@ import { RolesGuard } from "../roles/roles.guard";
 
 @Module({
   providers: [ProductService, PrismaService, ErrorHandlers, RolesGuard],
-  controllers: [ProductController]
+  controllers: [ProductController],
+  exports:[ProductService]
 })
 export class ProductModule {}

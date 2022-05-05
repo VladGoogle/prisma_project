@@ -4,9 +4,9 @@ export class ProductOrderDto{
   @IsNumber()
   quantity: number;
 
-  @IsNumber()
   price:number;
 
-  @IsNumber()
   modToProdId:number;
+
+  productId:number;
 }

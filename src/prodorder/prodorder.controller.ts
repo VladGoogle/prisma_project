@@ -26,9 +26,9 @@ export class ProductOrderController {
   }
 
   @Patch('change/products/orders/:id')
-  async changeProductToOrderInfo(@Body() obj:ProductOrderDto, @Param('id') id:string){
+  async changeProductQuantity(@Body() obj:ProductOrderDto, @Param('id') id:string){
     const productOrderId = parseInt(id);
-    return this.productOrderService.changeProductToOrderInfo(obj, productOrderId)
+    return this.productOrderService.changeProductQuantity(obj, productOrderId)
   }
 
   @Get('products/orders/:id')

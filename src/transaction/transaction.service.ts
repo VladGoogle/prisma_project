@@ -2,24 +2,30 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from "../../prisma/prisma.service";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 import { TransactionDto } from "./dto/transaction.dto";
-import { RefundDto } from "./dto/refund.dto";
-import { ChargeStatus } from "../enums/ChargeStatus.enum";
+import { UserService } from "../user/user.service";
+import { CardService } from "../card/card.service";
+import { OrderService } from "../order/order.service";
 
 @Injectable()
 export class TransactionService {
   constructor(private prisma: PrismaService,
-              private errorHandler: ErrorHandlers)
+              private errorHandler: ErrorHandlers,
+              private userService: UserService,
+              private cardService: CardService,
+              private orderService: OrderService)
   {}
 
   async createTransaction(data: TransactionDto) {
+    const order = await this.orderService.findOrder(data.orderId)
+    const user= await this.userService.findUserById(data.userId)
+    const card = await this.cardService.findCardById(data.cardId)
     return await this.prisma.transaction.create({
       data:{
-        source: data.source,
-        amount: data.amount,
-        status: data.status,
+        source: card.source,
+        amount: order.totalPrice,
         currency: data.currency,
         description: data.description,
-        customerToken: data.token,
+        customerToken: user.token,
         orderId: data.orderId,
         cardId: data.cardId
       }
@@ -57,26 +63,42 @@ export class TransactionService {
     })
   }
 
-  async changeTransactionAfterRefundForAdmin(data: RefundDto, id:number){
+  async changeTransactionAfterRefundForAdmin(refundId:string, amount: number, id:number){
+    const trans = await this.getTransactionById(id)
     const transaction = await  this.prisma.transaction.update({
       where:{id:id},
       data:{
+        refund:refundId,
         status: "REFUNDED",
-        amount: data.amount
+        amount: trans.amount - amount
       }
     })
     await this.errorHandler.NotFoundError(transaction)
     return transaction;
   }
 
-  async changeTransactionAfterRefundForCustomer(data: RefundDto, id:number){
+  async changeTransactionAfterRefundForCustomer(refundId:string,id:number){
     const transaction = await  this.prisma.transaction.update({
       where:{id:id},
       data:{
-        status: "REFUNDED"
+        refund: refundId,
+        status: "REFUNDED",
+        amount: 0
       }
     })
     await this.errorHandler.NotFoundError(transaction)
     return transaction;
   }
+
+  async setChargeId(charge: string, id:number){
+    const transaction = await  this.prisma.transaction.update({
+      where:{id:id},
+      data:{
+        charge: charge
+      }
+    })
+    await this.errorHandler.NotFoundError(transaction)
+    return transaction;
+  }
+
 }

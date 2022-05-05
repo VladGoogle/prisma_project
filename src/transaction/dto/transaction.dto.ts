@@ -4,27 +4,18 @@ import { ChargeCurrency } from "../../enums/ChargeCurrency.enum";
 
 export class TransactionDto {
 
-
   source: string;
 
-
   amount: number;
-
-  @IsEnum(ChargeStatus)
-  status: ChargeStatus;
 
   @IsEnum(ChargeCurrency)
   currency:ChargeCurrency;
 
-
   description: string;
-
-
-  token: string;
-
 
   orderId: number;
 
+  userId: number;
 
   cardId: number;
 }

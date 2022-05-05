@@ -13,7 +13,6 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(data: any): Promise<any> {
-    console.log('Data', data)
     return data;
   }
 }

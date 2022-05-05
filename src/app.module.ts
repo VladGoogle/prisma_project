@@ -15,10 +15,11 @@ import { TransactionModule } from './transaction/transaction.module';
 import { StripeModule } from './stripe/stripe.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MiddlewaresModule } from './middlewares/middlewares.module';
+import { ModtoprodtoorderModule } from "./modtoprodtoorder/modtoprodtoorder.module";
 
 
 @Module({
-  imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule, OrderModule, StripeModule, TransactionModule, PrismaModule, MiddlewaresModule],
+  imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule, OrderModule, StripeModule, TransactionModule, PrismaModule, MiddlewaresModule, ModtoprodtoorderModule],
   controllers: [AppController],
   providers: [AppService],
 })

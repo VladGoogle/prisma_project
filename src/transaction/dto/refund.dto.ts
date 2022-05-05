@@ -8,6 +8,4 @@ export class RefundDto {
 
   @IsEnum(ChargeStatus)
   status: ChargeStatus;
-
-  chargeId: string
 }

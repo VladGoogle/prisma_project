@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   firstName String?
   lastName  String?
-  email     String? @unique
+  email     String?   @unique
   password  String?
   phone     String?
   roles     Role[]
   card      Card?
   orders    Order[]
   token     String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Card {
@@ -30,58 +32,76 @@ model Card {
   user         User          @relation(fields: [userId], references: [id])
   userId       Int           @unique
   transactions Transaction[]
+  createdAt    DateTime?     @default(now())
+  updatedAt    DateTime?     @updatedAt
 }
 
 model Category {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Product[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Label {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  image    String?
-  products Product[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  image     String?
+  products  Product[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model Modifier {
   id                Int                @id @default(autoincrement())
   name              String?
-  price             Int
+  price             Float
   modToProds        ModToProd[]
   modToProdsToOrder ModToProdToOrder[]
+  createdAt         DateTime?          @default(now())
+  updatedAt         DateTime?          @updatedAt
 }
 
 model Product {
-  id          Int         @id @default(autoincrement())
-  name        String?
-  price       Int
-  description String?
-  label       Label       @relation(fields: [labelId], references: [id])
-  labelId     Int
-  category    Category    @relation(fields: [categoryId], references: [id])
-  categoryId  Int
-  modToProds  ModToProd[]
+  id            Int           @id @default(autoincrement())
+  name          String?
+  price         Float
+  description   String?
+  label         Label         @relation(fields: [labelId], references: [id])
+  labelId       Int
+  category      Category      @relation(fields: [categoryId], references: [id])
+  categoryId    Int
+  modToProds    ModToProd[]
+  ProductOrders ProductOrder?
+  createdAt     DateTime?     @default(now())
+  updatedAt     DateTime?     @updatedAt
 }
 
 model ModToProd {
   id           Int           @id @default(autoincrement())
+  sum          Float
   product      Product       @relation(fields: [productId], references: [id])
   productId    Int
   modifier     Modifier      @relation(fields: [modifierId], references: [id])
   modifierId   Int
   productOrder ProductOrder?
+  createdAt    DateTime?     @default(now())
+  updatedAt    DateTime?     @updatedAt
 }
 
 model ProductOrder {
   id                Int                @id @default(autoincrement())
   quantity          Int
-  price             Int
+  price             Float
   modToProd         ModToProd?         @relation(fields: [modToProdId], references: [id])
-  modToProdId       Int                @unique
+  modToProdId       Int?               @unique
+  product           Product?           @relation(fields: [productId], references: [id])
+  productId         Int?               @unique
   modToProdsToOrder ModToProdToOrder[]
   order             Order?
+  createdAt         DateTime?          @default(now())
+  updatedAt         DateTime?          @updatedAt
 }
 
 model ModToProdToOrder {
@@ -90,14 +110,16 @@ model ModToProdToOrder {
   productOrderId    Int
   modifier          Modifier     @relation(fields: [modifierId], references: [id])
   modifierId        Int
-  totalProductPrice Int
+  totalProductPrice Float
   order             Order?
+  createdAt         DateTime?    @default(now())
+  updatedAt         DateTime?    @updatedAt
 }
 
 model Order {
   id                 Int               @id @default(autoincrement())
   description        String?
-  totalPrice         Int
+  totalPrice         Float
   status             OrderStatus       @default(RECEIVED)
   isMods             Boolean
   user               User              @relation(fields: [userId], references: [id])
@@ -107,12 +129,16 @@ model Order {
   modToProdsToOrder  ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id])
   modToProdToOrderId Int?              @unique
   transaction        Transaction?
+  createdAt          DateTime?         @default(now())
+  updatedAt          DateTime?         @updatedAt
 }
 
 model Transaction {
   id            Int            @id @default(autoincrement())
   source        String
-  amount        Int
+  charge        String?
+  refund        String?
+  amount        Float
   status        ChargeStatus   @default(SUCCEEDED)
   currency      ChargeCurrency
   description   String?
@@ -121,6 +147,8 @@ model Transaction {
   orderId       Int            @unique
   card          Card?          @relation(fields: [cardId], references: [id])
   cardId        Int
+  createdAt     DateTime?      @default(now())
+  updatedAt     DateTime?      @updatedAt
 }
 
 enum Role {

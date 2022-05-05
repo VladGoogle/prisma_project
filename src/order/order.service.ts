@@ -2,25 +2,44 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { OrderDto } from "./dto/order.dto";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 import { PrismaService } from "../../prisma/prisma.service";
+import { ModifierToProductOrderService } from "../modtoprodtoorder/modtoprodtoorder.service";
+import { ProductOrderService } from "../prodorder/prodorder.service";
 
 @Injectable()
 export class OrderService {
   constructor(private prisma: PrismaService,
-              private errorHandler: ErrorHandlers)
+              private errorHandler: ErrorHandlers,
+              private productOrderService: ProductOrderService,
+              private modToProdToOrderService: ModifierToProductOrderService)
   {}
 
   async confirmOrder(data: OrderDto) {
-    return await this.prisma.order.create({
+    if(data.isMods) {
+      const product = await this.modToProdToOrderService.findFinalProductOrder(data.modToProdToOrderId)
+      return await this.prisma.order.create({
       data: {
         description: data.description,
-        totalPrice: data.totalPrice,
+        totalPrice: product.totalProductPrice,
         status: data.status,
         isMods: data.isMods,
         userId: data.userId,
-        productOrderId: data.productOrderId,
         modToProdToOrderId: data.modToProdToOrderId
       },
     });
+  }
+    else {
+      const product = await this.productOrderService.findProductToOrder(data.productOrderId)
+      return await this.prisma.order.create({
+        data: {
+          description: data.description,
+          totalPrice: product.price,
+          status: data.status,
+          isMods: data.isMods,
+          userId: data.userId,
+          productOrderId: data.productOrderId
+        },
+      });
+    }
   }
 
 
@@ -28,6 +47,7 @@ export class OrderService {
     const order = await this.prisma.order.findUnique({
       where:{id:id},
       include:{
+        user: true,
         productsOrder:true,
         modToProdsToOrder: true,
         transaction: true
@@ -42,6 +62,7 @@ export class OrderService {
   async findAllOrders(){
     return await  this.prisma.order.findMany({
       include:{
+        user: true,
         productsOrder:true,
         modToProdsToOrder: true,
         transaction: true
@@ -55,7 +76,6 @@ export class OrderService {
       where:{id:id},
       data:{
         description: data.description,
-        totalPrice: data.totalPrice,
         isMods: data.isMods,
         userId: data.userId,
         productOrderId: data.productOrderId,
