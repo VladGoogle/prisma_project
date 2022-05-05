@@ -6,8 +6,9 @@ import { ErrorHandlers } from "../middlewares/error.handlers";
 import { PrismaModule } from "../../prisma/prisma.module";
 
 @Module({
-  providers: [UserService, PrismaService, ErrorHandlers],
-  exports: [UserService],
+  providers: [UserService],
   controllers: [UserController],
+  imports: [PrismaModule, ErrorHandlers],
+  exports:[UserService]
 })
 export class UserModule {}

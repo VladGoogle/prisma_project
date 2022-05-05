@@ -6,6 +6,7 @@ import { ErrorHandlers } from "../middlewares/error.handlers";
 
 @Module({
   providers: [CardService, PrismaService, ErrorHandlers],
-  controllers: [CardController]
+  controllers: [CardController],
+  exports:[CardModule]
 })
 export class CardModule {}

@@ -11,6 +11,7 @@ import { OrderService } from "../order/order.service";
 
 @Module({
   controllers: [ModToProdToOrderController],
-  providers: [ModifierToProductOrderService, PrismaService, ErrorHandlers, ModifierService, ProductOrderService, ModToProdService, ProductService, OrderService]
+  providers: [ModifierToProductOrderService, PrismaService, ErrorHandlers, ModifierService, ProductOrderService, ModToProdService, ProductService, OrderService],
+  exports:[ModifierToProductOrderService]
 })
 export class ModtoprodtoorderModule {}

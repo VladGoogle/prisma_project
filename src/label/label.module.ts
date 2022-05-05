@@ -7,6 +7,7 @@ import { RolesGuard } from "../roles/roles.guard";
 
 @Module({
   providers: [LabelService, PrismaService, ErrorHandlers, RolesGuard],
-  controllers: [LabelController]
+  controllers: [LabelController],
+  exports:[LabelService]
 })
 export class LabelModule {}

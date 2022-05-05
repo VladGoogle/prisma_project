@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { ErrorHandlers } from "../middlewares/error.handlers";
 import { TransactionDto } from "./dto/transaction.dto";
@@ -10,7 +10,7 @@ import { OrderService } from "../order/order.service";
 export class TransactionService {
   constructor(private prisma: PrismaService,
               private errorHandler: ErrorHandlers,
-              private userService: UserService,
+              @Inject(UserService) private userService: UserService,
               private cardService: CardService,
               private orderService: OrderService)
   {}

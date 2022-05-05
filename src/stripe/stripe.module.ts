@@ -17,6 +17,7 @@ import { ModifierService } from "../modifier/modifier.service";
 @Module({
   providers: [StripeService, PrismaService, ErrorHandlers, RolesGuard, UserService, TransactionService, CardService, OrderService, ProductOrderService, ModifierToProductOrderService, ModToProdService, ProductService, ModifierService],
   controllers: [StripeController],
+  exports:[StripeService],
   imports: [UserService, TransactionService, CardService]
 })
 export class StripeModule {}

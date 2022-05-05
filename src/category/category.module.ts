@@ -8,5 +8,6 @@ import { ErrorHandlers } from "../middlewares/error.handlers";
 @Module({
   providers: [CategoryService, PrismaService, RolesGuard, ErrorHandlers],
   controllers: [CategoryController],
+  exports:[CategoryService]
 })
 export class CategoryModule {}
