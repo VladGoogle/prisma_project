@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { LabelService } from './label.service';
 import { LabelController } from './label.controller';
-import { PrismaService } from "../../prisma/prisma.service";
-import { ErrorHandlers } from "../middlewares/error.handlers";
-import { RolesGuard } from "../roles/roles.guard";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { MiddlewaresModule } from "../middlewares/middlewares.module";
 
 @Module({
-  providers: [LabelService, PrismaService, ErrorHandlers, RolesGuard],
+  providers: [LabelService],
   controllers: [LabelController],
-  exports:[LabelService]
+  exports:[LabelService],
+  imports:[PrismaModule, MiddlewaresModule]
 })
 export class LabelModule {}

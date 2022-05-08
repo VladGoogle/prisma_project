@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { CardService } from './card.service';
 import { CardController } from './card.controller';
-import { PrismaService } from "../../prisma/prisma.service";
-import { ErrorHandlers } from "../middlewares/error.handlers";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { MiddlewaresModule } from "../middlewares/middlewares.module";
 
 @Module({
-  providers: [CardService, PrismaService, ErrorHandlers],
+  providers: [CardService],
   controllers: [CardController],
-  exports:[CardModule]
+  exports:[CardService],
+  imports:[PrismaModule, MiddlewaresModule]
 })
 export class CardModule {}

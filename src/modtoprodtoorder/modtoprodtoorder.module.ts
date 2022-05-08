@@ -1,17 +1,15 @@
 import { Module } from '@nestjs/common';
 import { ModifierToProductOrderService } from "./modtoprodtoorder.service";
 import { ModToProdToOrderController } from "./modtoprodtoorder.controller";
-import { PrismaService } from "../../prisma/prisma.service";
-import { ErrorHandlers } from "../middlewares/error.handlers";
-import { ModifierService } from "../modifier/modifier.service";
-import { ProductOrderService } from "../prodorder/prodorder.service";
-import { ModToProdService } from "../modtoprod/modtoprod.service";
-import { ProductService } from "../product/product.service";
-import { OrderService } from "../order/order.service";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { MiddlewaresModule } from "../middlewares/middlewares.module";
+import { ModifierModule } from "../modifier/modifier.module";
+import { ProdorderModule } from "../prodorder/prodorder.module";
 
 @Module({
   controllers: [ModToProdToOrderController],
-  providers: [ModifierToProductOrderService, PrismaService, ErrorHandlers, ModifierService, ProductOrderService, ModToProdService, ProductService, OrderService],
-  exports:[ModifierToProductOrderService]
+  providers: [ModifierToProductOrderService],
+  exports:[ModifierToProductOrderService],
+  imports:[PrismaModule, MiddlewaresModule, ModifierModule, ProdorderModule]
 })
 export class ModtoprodtoorderModule {}

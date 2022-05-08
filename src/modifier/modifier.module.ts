@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ModifierService } from './modifier.service';
 import { ModifierController } from './modifier.controller';
-import { ErrorHandlers } from "../middlewares/error.handlers";
-import { PrismaService } from "../../prisma/prisma.service";
-import { RolesGuard } from "../roles/roles.guard";
+import { PrismaModule } from "../../prisma/prisma.module";
+import { MiddlewaresModule } from "../middlewares/middlewares.module";
 
 @Module({
-  providers: [ModifierService, ErrorHandlers, PrismaService, RolesGuard],
+  providers: [ModifierService],
   controllers: [ModifierController],
-  exports: [ModifierService]
+  exports: [ModifierService],
+  imports:[MiddlewaresModule, PrismaModule]
 })
 export class ModifierModule {}

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { CardService } from "../card/card.service";
 import { TransactionDto } from "../transaction/dto/transaction.dto";
-import { RefundDto } from "../transaction/dto/refund.dto";
 import { TransactionService } from "../transaction/transaction.service";
 import { UserService } from "../user/user.service";
 import * as dotenv from 'dotenv'
@@ -59,7 +58,7 @@ export class StripeService {
     const card = await this.cardService.findCardById(data.cardId)
     const charge = await stripe.charges.create({
       source: card.source,
-      amount: order.totalPrice,
+      amount: Math.round(order.totalPrice * 100),
       currency: data.currency,
       customer: user.token,
       description:data.description
@@ -74,7 +73,7 @@ export class StripeService {
       const transaction = await this.transactionService.getTransactionById(id)
        const refund = await stripe.refunds.create({
         charge: transaction.charge,
-        amount: amount
+        amount: Math.round(amount * 100)
       })
 
       const charge = await this.transactionService.changeTransactionAfterRefundForAdmin(refund.id,amount, id)
