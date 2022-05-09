@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable} from "@nestjs/common";
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserDto } from "./dto/user.dto";
 import { newPasswordDto } from "./dto/newPassword.dto";
@@ -114,7 +114,6 @@ export class UserService {
     if(data.repeatPassword!=data.newPassword){
       throw new BadRequestException(`Passwords should be matched`)
     }
-
 
     return await this.prisma.user.update({
       where:{id: id},

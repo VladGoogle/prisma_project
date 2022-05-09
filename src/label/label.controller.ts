@@ -16,15 +16,18 @@ import { LabelDto } from "./dto/label.dto";
 import { diskStorage } from "multer";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard } from "@nestjs/passport";
-import { extname } from "path";
 import { Roles } from "../roles/roles.decorator";
 import { Role } from "../enums/role.enum";
+import { editFileName } from "../constants/file.constants";
+import { imageFileFilter } from "../constants/file.constants";
+import { maxSize } from "../constants/file.constants";
 
 
 @Controller()
 @UseGuards(AuthGuard('jwt'))
 export class LabelController {
-  constructor(private labelService: LabelService) {}
+  constructor(private labelService: LabelService,
+  ) {}
 
   @Roles(Role.ADMIN)
   @Post('labels/create')
@@ -37,12 +40,14 @@ export class LabelController {
   @UseInterceptors(FileInterceptor('file',{
     storage: diskStorage({
       destination:'./uploads',
-      filename:(req, file, cb)=>{
-        const randomName = Array(32).fill(null).map(()=>(Math.round(Math.random()*16)).toString(16)).join('')
-        cb(null,`${randomName}${extname(file.originalname)}`)
-      }
-    })
-  }))
+      filename: editFileName,
+      }),
+    fileFilter: imageFileFilter,
+    limits:{
+      fileSize: maxSize
+    }
+    }),
+  )
   async uploadLabelImage( @UploadedFile() file, @Req() req, @Param('id') id:string){
     const labelId = parseInt(id)
     return await this.labelService.addLabelImage(req.file.path, labelId)
