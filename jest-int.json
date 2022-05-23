@@ -2,7 +2,7 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": ".int-spec.ts$",
+  "testRegex": "src/auth/test/integration/auth.service.spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   }
