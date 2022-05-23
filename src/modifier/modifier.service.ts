@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../../prisma/prisma.service';
 import { ModDto } from "./dto/mod.dto";
 import { ErrorHandlers } from "../middlewares/error.handlers";
+import { UpdateModDto } from "./dto/updateMod.dto";
 
 @Injectable()
 export class ModifierService {
@@ -55,11 +56,10 @@ export class ModifierService {
     })
   }
 
-  async updateModifierInfo(data: ModDto, id:number){
+  async updateModifierPrice(data: UpdateModDto, id:number){
     const mod = await  this.prisma.modifier.update({
-      where:{id:id},
+      where:{id},
       data:{
-        name: data.name,
         price: data.price
       }
     })

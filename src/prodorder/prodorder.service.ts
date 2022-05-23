@@ -67,16 +67,32 @@ export class ProductOrderService {
 
   async changeProductQuantity(data: ProductOrderDto, id:number){
     const obj = await this.findProductToOrder(id)
-    const productOrder = await  this.prisma.productOrder.update({
-      where:{id:id},
-      data:{
-        quantity: data.quantity,
-        price: obj.price * data.quantity,
-      }
-    })
-    await this.errorHandler.NotFoundError(productOrder)
-
-    return productOrder;
+    if(!obj.productId) {
+      const modToProd = await this.modToProdService.findModifierWithProduct(obj.modToProdId)
+      const productOrder = await this.prisma.productOrder.update({
+        where: { id: id },
+        data: {
+          quantity: data.quantity,
+          price: modToProd.sum * data.quantity,
+          modToProdId: data.modToProdId
+        }
+      })
+      await this.errorHandler.NotFoundError(productOrder)
+      return productOrder;
+    }
+    else{
+      const product = await this.product.findProductById(obj.productId)
+      const productOrder =  await this.prisma.productOrder.update({
+        where: { id: id },
+        data: {
+          quantity: data.quantity,
+          price: product.price * data.quantity,
+          productId: data.productId
+        },
+      })
+      await this.errorHandler.NotFoundError(productOrder)
+      return productOrder;
+    }
   }
 
 

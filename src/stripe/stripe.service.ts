@@ -47,18 +47,23 @@ export class StripeService {
       user.token,
       {source: card.externalId}
     )
-
     await this.cardService.setCardSource(source.id, cardId)
     return source;
   }
 
   public async payForOrderWithToken(data: TransactionDto){
     const order = await this.orderService.findOrder(data.orderId)
+    await this.errorHandler.NotFoundError(order)
     const user= await this.userService.findUserById(data.userId)
+    await this.errorHandler.NotFoundError(user)
     const card = await this.cardService.findCardById(data.cardId)
+    await this.errorHandler.NotFoundError(card)
     const charge = await stripe.charges.create({
       source: card.source,
       amount: Math.round(order.totalPrice * 100),
+      metadata:{
+        "orderId": data.orderId
+      },
       currency: data.currency,
       customer: user.token,
       description:data.description
@@ -71,6 +76,7 @@ export class StripeService {
   public async createRefundForAdmin(amount: number, id:number)
   {
       const transaction = await this.transactionService.getTransactionById(id)
+      await this.errorHandler.NotFoundError(transaction)
        const refund = await stripe.refunds.create({
         charge: transaction.charge,
         amount: Math.round(amount * 100)
@@ -83,6 +89,7 @@ export class StripeService {
   public async createRefundForCustomer(id:number)
   {
     const transaction = await this.transactionService.getTransactionById(id)
+    await this.errorHandler.NotFoundError(transaction)
     const refund = await stripe.refunds.create({
       charge: transaction.charge
     })

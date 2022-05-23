@@ -16,6 +16,7 @@ import { ModifierService } from "./modifier.service";
 import { Role } from "../enums/role.enum";
 import { Roles } from "../roles/roles.decorator";
 import { AuthGuard } from "@nestjs/passport";
+import { UpdateModDto } from "./dto/updateMod.dto";
 
 @Controller()
 @UseGuards(AuthGuard('jwt'))
@@ -30,9 +31,10 @@ export class ModifierController {
 
   @Roles(Role.ADMIN)
   @Patch('modifiers/:id/update')
-  async updateModifierInfo(@Body() mod:ModDto, id:string) {
+  async updateModifierInfo(@Body() mod:UpdateModDto, id:string) {
     const modifierId = parseInt(id);
-    return await  this.modifierService.updateModifierInfo(mod, modifierId)
+    console.log(typeof modifierId)
+    return await  this.modifierService.updateModifierPrice(mod, modifierId)
   }
 
   @Get('modifiers/:id')

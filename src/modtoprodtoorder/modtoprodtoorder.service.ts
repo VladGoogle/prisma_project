@@ -16,12 +16,14 @@ export class ModifierToProductOrderService {
               )
   {}
 
-  async addModifierToProductOrder(data: ModToProdToOrderDto) {
-      const product = await this.productOrderService.findProductToOrder(data.productOrderId)
+  async addModifierToProductOrder(data: ModToProdToOrderDto, id: number) {
+      const product = await this.productOrderService.findProductToOrder(id)
+      await this.errorHandler.NotFoundError(product)
       const modifier = await this.modifierService.findModifierById(data.modifierId)
+      await this.errorHandler.NotFoundError(modifier)
       return await this.prisma.modToProdToOrder.create({
         data: {
-          productOrderId: data.productOrderId,
+          productOrderId: id,
           modifierId: data.modifierId,
           totalProductPrice: product.price + modifier.price
         },
@@ -55,9 +57,11 @@ export class ModifierToProductOrderService {
   }
 
 
-  async changeModifierToProductToOrder(data: ModToProdToOrderDto, id:number){
-    const product = await this.productOrderService.findProductToOrder(data.productOrderId)
+  async changeModifierToProductToOrder(data: ModToProdToOrderDto, prodId:number, id:number){
+    const product = await this.productOrderService.findProductToOrder(prodId)
+    await this.errorHandler.NotFoundError(product)
     const modifier = await this.modifierService.findModifierById(data.modifierId)
+    await this.errorHandler.NotFoundError(modifier)
     const productOrder = await  this.prisma.modToProdToOrder.update({
       where:{id:id},
       data:{

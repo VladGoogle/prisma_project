@@ -9,15 +9,17 @@ export class ModToProdToOrderController {
   constructor(private modToProdToOrderService: ModifierToProductOrderService) {
   }
 
-  @Post('modifiersToProductsToOrder')
-  async addModifierToProductOrder(@Body() obj:ModToProdToOrderDto){
-    return this.modToProdToOrderService.addModifierToProductOrder(obj)
+  @Post('productToOrder/:id/modifiersToProductsToOrder')
+  async addModifierToProductOrder(@Body() obj:ModToProdToOrderDto, @Param('id') id: string){
+    const prodId = parseInt(id);
+    return this.modToProdToOrderService.addModifierToProductOrder(obj, prodId)
   }
 
-  @Patch('modifiersToProductsToOrder/:id')
-  async changeModifierToProductToOrder(@Body() obj:ModToProdToOrderDto, @Param('id') id: string){
-    const prodId = parseInt(id);
-    return this.modToProdToOrderService.changeModifierToProductToOrder(obj, prodId)
+  @Patch('productToOrder/:prodId/modifiersToProductsToOrder/:id')
+  async changeModifierToProductToOrder(@Body() obj:ModToProdToOrderDto, @Param('id') id: string, @Param('prodId') prodId: string){
+    const productId = parseInt(prodId);
+    const finalId = parseInt(id);
+    return this.modToProdToOrderService.changeModifierToProductToOrder(obj, productId, finalId)
   }
 
 

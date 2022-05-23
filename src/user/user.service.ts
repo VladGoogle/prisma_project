@@ -4,6 +4,8 @@ import { UserDto } from "./dto/user.dto";
 import { newPasswordDto } from "./dto/newPassword.dto";
 import * as bcrypt from 'bcrypt';
 import { ErrorHandlers } from "../middlewares/error.handlers";
+import { UpdateUserInfoDto } from "./dto/updateUserInfo.dto";
+import { ChangeUserRoleDto } from "./dto/changeUserRole.dto";
 
 @Injectable()
 export class UserService {
@@ -63,12 +65,16 @@ export class UserService {
 
   async removeUser(id:number){
     const user =  await  this.prisma.user.delete({
-      where:{id:id}
+      where:{id:id},
+      include:{
+        card: true,
+        orders: true
+      }
     })
     await this.errorHandler.NotFoundError(user)
   }
 
-  async updateUserInfo (data: UserDto, id:number) {
+  async updateUserInfo (data: UpdateUserInfoDto, id:number) {
     const user = await this.prisma.user.update({
       where:{id: id},
       data:{
@@ -76,7 +82,6 @@ export class UserService {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        roles: data.roles,
       }
     })
     await this.errorHandler.NotFoundError(user)
@@ -122,6 +127,17 @@ export class UserService {
       }
     })
 
+  }
+
+  async changeUserRole (data: ChangeUserRoleDto, id:number){
+    const user = await this.prisma.user.update({
+      where:{id: id},
+      data:{
+        roles: data.roles
+      }
+    })
+    await this.errorHandler.NotFoundError(user)
+    return user;
   }
 
 }

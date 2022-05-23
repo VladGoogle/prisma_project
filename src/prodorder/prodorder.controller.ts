@@ -20,7 +20,7 @@ import { AuthGuard } from "@nestjs/passport";
 export class ProductOrderController {
   constructor(private productOrderService: ProductOrderService) {}
 
-  @Post('confirm/products/orders')
+  @Post('confirm/productOrder')
   async addModifierToProduct(@Body() obj:ProductOrderDto){
     return this.productOrderService.confirmProductToOrder(obj)
   }

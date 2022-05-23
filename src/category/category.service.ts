@@ -17,11 +17,11 @@ export class CategoryService {
 
 
   async findCategoryByName (name:string){
-    const cat =  await  this.prisma.category.findFirst({
+    const category =  await  this.prisma.category.findFirst({
       where:{name:name}
     });
-    await  this.errorHandler.NotFoundError(cat)
-    return cat;
+    await  this.errorHandler.NotFoundError(category)
+    return category;
   }
 
   async findCategoryById (id:number){

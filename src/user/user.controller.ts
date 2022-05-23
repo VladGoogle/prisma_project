@@ -1,8 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { UserService } from './user.service';
-import { UserDto } from './dto/user.dto';
 import { AuthGuard } from "@nestjs/passport";
 import {newPasswordDto} from "./dto/newPassword.dto";
+import { UpdateUserInfoDto } from "./dto/updateUserInfo.dto";
+import { ChangeUserRoleDto } from "./dto/changeUserRole.dto";
+import { Roles } from "../roles/roles.decorator";
+import { Role } from "../enums/role.enum";
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt'))
@@ -21,7 +24,7 @@ export class UserController {
   }
 
   @Patch('profile/:id/updateUser')
-  async updateUserInfo(@Param('id') id:string, @Body() user:UserDto){
+  async updateUserInfo(@Param('id') id:string, @Body() user:UpdateUserInfoDto){
     const userId = parseInt(id)
     return await  this.userService.updateUserInfo(user, userId)
   }
@@ -32,9 +35,17 @@ export class UserController {
     return await  this.userService.changeUserPassword(password, userId)
   }
 
+  @Roles(Role.NETWORK_ADMIN)
+  @Patch('network/admin/changerole/:id')
+  async changeUserRole(@Param('id') id:string, @Body() data:ChangeUserRoleDto){
+    const userId = parseInt(id)
+    return await  this.userService.changeUserRole(data, userId)
+  }
+
   @Delete(':id')
   async removeUser(@Param('id') id:string){
     const userId = parseInt(id)
     return await  this.userService.removeUser(userId)
   }
+
 }

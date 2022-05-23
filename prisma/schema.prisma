@@ -29,7 +29,7 @@ model Card {
   id           Int           @id @default(autoincrement())
   externalId   String
   source       String?
-  user         User          @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       Int           @unique
   transactions Transaction[]
   createdAt    DateTime?     @default(now())
@@ -68,9 +68,9 @@ model Product {
   name          String?
   price         Float
   description   String?
-  label         Label         @relation(fields: [labelId], references: [id])
+  label         Label         @relation(fields: [labelId], references: [id], onDelete: Cascade)
   labelId       Int
-  category      Category      @relation(fields: [categoryId], references: [id])
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId    Int
   modToProds    ModToProd[]
   ProductOrders ProductOrder?
@@ -81,9 +81,9 @@ model Product {
 model ModToProd {
   id           Int           @id @default(autoincrement())
   sum          Float
-  product      Product       @relation(fields: [productId], references: [id])
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId    Int
-  modifier     Modifier      @relation(fields: [modifierId], references: [id])
+  modifier     Modifier      @relation(fields: [modifierId], references: [id], onDelete: Cascade)
   modifierId   Int
   productOrder ProductOrder?
   createdAt    DateTime?     @default(now())
@@ -94,9 +94,9 @@ model ProductOrder {
   id                Int                @id @default(autoincrement())
   quantity          Int
   price             Float
-  modToProd         ModToProd?         @relation(fields: [modToProdId], references: [id])
+  modToProd         ModToProd?         @relation(fields: [modToProdId], references: [id], onDelete: Cascade)
   modToProdId       Int?               @unique
-  product           Product?           @relation(fields: [productId], references: [id])
+  product           Product?           @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId         Int?               @unique
   modToProdsToOrder ModToProdToOrder[]
   order             Order?
@@ -106,9 +106,9 @@ model ProductOrder {
 
 model ModToProdToOrder {
   id                Int          @id @default(autoincrement())
-  productOrder      ProductOrder @relation(fields: [productOrderId], references: [id])
+  productOrder      ProductOrder @relation(fields: [productOrderId], references: [id], onDelete: Cascade)
   productOrderId    Int
-  modifier          Modifier     @relation(fields: [modifierId], references: [id])
+  modifier          Modifier     @relation(fields: [modifierId], references: [id], onDelete: Cascade)
   modifierId        Int
   totalProductPrice Float
   order             Order?
@@ -122,11 +122,11 @@ model Order {
   totalPrice         Float
   status             OrderStatus       @default(RECEIVED)
   isMods             Boolean
-  user               User              @relation(fields: [userId], references: [id])
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId             Int
-  productsOrder      ProductOrder?     @relation(fields: [productOrderId], references: [id])
+  productsOrder      ProductOrder?     @relation(fields: [productOrderId], references: [id], onDelete: Cascade)
   productOrderId     Int?              @unique
-  modToProdsToOrder  ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id])
+  modToProdsToOrder  ModToProdToOrder? @relation(fields: [modToProdToOrderId], references: [id], onDelete: Cascade)
   modToProdToOrderId Int?              @unique
   transaction        Transaction?
   createdAt          DateTime?         @default(now())
@@ -143,9 +143,9 @@ model Transaction {
   currency      ChargeCurrency
   description   String?
   customerToken String
-  order         Order?         @relation(fields: [orderId], references: [id])
+  order         Order?         @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId       Int            @unique
-  card          Card?          @relation(fields: [cardId], references: [id])
+  card          Card?          @relation(fields: [cardId], references: [id], onDelete: Cascade)
   cardId        Int
   createdAt     DateTime?      @default(now())
   updatedAt     DateTime?      @updatedAt
@@ -154,6 +154,7 @@ model Transaction {
 enum Role {
   CUSTOMER
   ADMIN
+  NETWORK_ADMIN
 }
 
 enum ChargeStatus {
