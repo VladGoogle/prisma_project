@@ -13,31 +13,33 @@ services:
     networks:
       - appnet
     depends_on:
-      - dev_database
+      - database
     ports:
       - "3001:3001"
     command: npm run start:dev
 
 
 
-  dev_database:
-    container_name: dev_database
+  database:
+    container_name: database
     image: postgres:12
     networks:
-      - db_dev
+      - appnet
     ports:
       - "5432:5432"
     volumes:
       - db_val:/var/lib/postgresql/data
     env_file: ".env"
 
-  test_database:
-      container_name: test_database
+
+
+  test-database:
+      container_name: test-database
       image: postgres:12
       networks:
-        - db_test
+        - appnet
       ports:
-        - "5435:5432"
+        - "5435:5435"
       volumes:
         - db_test_val:/var/lib/postgresql/data
       env_file: ".env.test"
@@ -46,8 +48,7 @@ services:
 
 networks:
   appnet:
-  db_dev:
-  db_test:
+
 
 
 volumes:
