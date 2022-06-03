@@ -1,9 +1,8 @@
-import { INestApplication, Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { INestApplication, Injectable, NotFoundException, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { PrismaClient } from '@prisma/client';
 import { ConfigService } from "@nestjs/config";
 import * as dotenv from 'dotenv'
 dotenv.config()
-
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
 

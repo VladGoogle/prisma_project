@@ -32,9 +32,10 @@ export class UserService {
       include:{
         card:true,
         orders:true
-      }
+      },
+      rejectOnNotFound: true
     });
-    await this.errorHandler.NotFoundError(user)
+    //await this.errorHandler.NotFoundError(user)
 
     return user;
   }
@@ -49,7 +50,7 @@ export class UserService {
         orders:true
       }
     })
-    await this.errorHandler.NotFoundError(user)
+    //await this.errorHandler.NotFoundError(user)
 
     return user;
   }

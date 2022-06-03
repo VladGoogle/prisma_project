@@ -1,9 +1,10 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from "../user/user.service";
 import { UserDto } from "../user/dto/user.dto";
 import { LoginDto } from "./dto/auth.dto";
+import { ErrorHandlers } from "../middlewares/error.handlers";
 
 
 
@@ -12,17 +13,21 @@ export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly errorHandlers: ErrorHandlers
   ) {}
 
   async login(user: LoginDto) {
-    const userObj = await this.userService.findUserByEmail(user.email)
-    const isValid = await bcrypt.compare(user.password, userObj.password)
-    if(!isValid) {
-      throw new BadRequestException('Invalid user credentials')
+    const isValidEmail = await this.userService.findUserByEmail(user.email)
+    if(!isValidEmail) {
+      throw new UnauthorizedException('Invalid user credentials')
+    }
+    const isValidPassword = await bcrypt.compare(user.password, isValidEmail.password)
+    if(!isValidPassword) {
+      throw new UnauthorizedException('Invalid user credentials')
     }
     const access_token = this.jwtService.sign({
-      email: userObj.email,
-      roles: userObj.roles
+      email: isValidEmail.email,
+      roles: isValidEmail.roles
     })
     return {access_token};
   }
