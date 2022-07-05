@@ -54,7 +54,7 @@ export class TransactionService {
   }
 
   async deleteTransaction(id: number){
-    return await this.prisma.transaction.findUnique({
+    return await this.prisma.transaction.delete({
       where:{id:id},
       include:{
         order: true,

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable} from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserDto } from "./dto/user.dto";
 import { newPasswordDto } from "./dto/newPassword.dto";
@@ -32,16 +32,16 @@ export class UserService {
       include:{
         card:true,
         orders:true
-      },
-      rejectOnNotFound: true
+      }
+      //rejectOnNotFound: true
     });
-    //await this.errorHandler.NotFoundError(user)
+    await this.errorHandler.NotFoundError(user)
 
     return user;
   }
 
   async findUserByEmail(email:string){
-    const user =  await  this.prisma.user.findFirst({
+    const user =  await  this.prisma.user.findUnique({
       where:{
         email:email
       },
@@ -50,30 +50,36 @@ export class UserService {
         orders:true
       }
     })
-    //await this.errorHandler.NotFoundError(user)
+    await this.errorHandler.NotFoundError(user)
 
     return user;
   }
 
   async findAllUsers(){
-    return await this.prisma.user.findMany({
+    const users =  await this.prisma.user.findMany({
       include:{
         card:true,
         orders:true
       }
     })
+    if(!users.length) {
+      return new NotFoundException('No users was found')
+    }
+    return users;
   }
 
-  async removeUser(id:number){
-    const user =  await  this.prisma.user.delete({
-      where:{id:id},
-      include:{
+  async removeUser(id:number) {
+    const user = await this.prisma.user.delete({
+      where: { id: id },
+      include: {
         card: true,
         orders: true
       }
     })
     await this.errorHandler.NotFoundError(user)
+    return { message: `User with id: ${user.id} has been deleted` }
   }
+
 
   async updateUserInfo (data: UpdateUserInfoDto, id:number) {
     const user = await this.prisma.user.update({

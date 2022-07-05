@@ -8,6 +8,7 @@ import { Response } from "express";
 import { PrismaService } from "../../../../prisma/prisma.service";
 import { UserService } from "../../../user/user.service";
 import { AuthService } from "../../auth.service";
+import { LoginDto } from "../../dto/auth.dto";
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -39,7 +40,7 @@ describe('AuthController', () => {
     expect(authController).toBeDefined()
   });
 
-  it("Registration", async ()=> {
+  it("Should register new user", async ()=> {
     const requestBody: UserDto ={
       "firstName": "Vlad",
       "lastName": "Google",
@@ -59,4 +60,29 @@ describe('AuthController', () => {
     expect(user).toHaveProperty('token')
     expect(user.password).not.toBeDefined()
   });
+
+
+    it("Should login", async()=> {
+      const requestBody: UserDto ={
+        "firstName": "Vlad",
+        "lastName": "Google",
+        "email": "vlad1@gmail.com",
+        "password": "Asdrtyjklmnb1@",
+        "phone": "+14155550169",
+        "roles": Role.ADMIN
+      }
+
+      const loginBody: LoginDto ={
+        email: "vlad1@gmail.com",
+        password:"Asdrtyjklmnb1@"
+      }
+      await authController.signUp(requestBody)
+      const spyFindUserService = jest.spyOn(userService, "findUserByEmail")
+      const spyLoginAuthService = jest.spyOn(authService, 'login')
+      const userLogin = await authController.login(loginBody)
+      expect(spyFindUserService).toHaveBeenCalled()
+      expect(spyLoginAuthService).toHaveBeenCalled()
+      expect(typeof userLogin).toBe('object')
+      expect(userLogin).toHaveProperty('access_token')
+    });
 });

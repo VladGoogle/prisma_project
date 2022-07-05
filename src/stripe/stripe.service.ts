@@ -68,9 +68,9 @@ export class StripeService {
       customer: user.token,
       description:data.description
     })
-    const transaction = await this.transactionService.createTransaction(data)
-    await this.transactionService.setChargeId(charge.id, transaction.id)
-    return {"charge":charge, "transaction":transaction};
+    const transactionOne = await this.transactionService.createTransaction(data)
+    const transactionTwo = await this.transactionService.setChargeId(charge.id, transactionOne.id)
+    return {"charge":charge, "transaction":transactionTwo};
   }
 
   public async createRefundForAdmin(amount: number, id:number)

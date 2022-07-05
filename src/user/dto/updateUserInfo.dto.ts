@@ -14,7 +14,4 @@ export class UpdateUserInfoDto {
 
   @IsE164PhoneNumber()
   phone: string;
-
-  @IsEnum(Role)
-  roles: Role;
 }

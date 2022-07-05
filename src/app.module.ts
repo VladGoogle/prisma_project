@@ -16,12 +16,17 @@ import { StripeModule } from './stripe/stripe.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { MiddlewaresModule } from './middlewares/middlewares.module';
 import { ModtoprodtoorderModule } from "./modtoprodtoorder/modtoprodtoorder.module";
+import { AuthStrategy } from "./auth/auth.strategy";
 
 
 
 @Module({
   imports: [UserModule, AuthModule, CardModule, CategoryModule, LabelModule, ModifierModule, ProductModule, ModtoprodModule, ProdorderModule, OrderModule, StripeModule, TransactionModule, PrismaModule, MiddlewaresModule, ModtoprodtoorderModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+    provide: AuthStrategy,
+    useExisting: AuthStrategy,
+  },AuthStrategy,AppService],
 })
 export class AppModule {}
