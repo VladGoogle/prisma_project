@@ -1,7 +1,5 @@
 Diploma Project:
 
-First of all, you have to install Node to you PC and node modules. To do that, run "npm i" command in terminal
-
 Run a project:
 
 1.docker-compose up --build
